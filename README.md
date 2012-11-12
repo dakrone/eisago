@@ -15,7 +15,7 @@ First download the latest ElasticSearch release from the
 ```
 
 Then make sure you have a "clojure-1.4.0.json.gz" file (if you don't,
-use [cadastre](https://github.com/dakrone/cadastre) to generate one.
+use [cadastre](https://github.com/dakrone/cadastre) to generate one).
 
 Next, from inside eisago.core:
 
