@@ -1,4 +1,4 @@
-(ns import.config
+(ns eisago.config
   (:require [carica.core :as carica]))
 
 (def config carica/config)

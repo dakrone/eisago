@@ -1,4 +1,4 @@
-(ns import.core
+(ns eisago.core
   "Main import namespace"
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
