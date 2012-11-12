@@ -1,13 +1,11 @@
-# import
+# eisago
 
-A Clojure library designed to ... well, that part is up to you.
+Next-gen clojuredocs importer and API
 
 ## Usage
 
-FIXME
+See eisago.core
 
 ## License
 
-Copyright © 2012 FIXME
-
-Distributed under the Eclipse Public License, the same as Clojure.
+Copyright © 2012 Matthew Lee Hinman
