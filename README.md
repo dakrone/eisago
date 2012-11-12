@@ -54,7 +54,14 @@ Next, from inside eisago.core:
  :id "e194bda67affc5915db2460bd4bc29a6",
  :file "clojure/core.clj",
  :project "org.clojure/clojure"}
+;; :doc and :source shortened to fit here
 ```
+
+## Progress
+
+- import (in progress, almost done)
+- api (not started yet)
+- migration tool (not started yet)
 
 ## License
 
