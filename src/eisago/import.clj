@@ -27,7 +27,7 @@
       (es/index-project data)
       (es/index-all-vars data))))
 
-(defn- test-it [& [filename]]
+(defn- test-it [filename]
   ;; connection-pool brings it from ~12 seconds to ~4.5
   (index-everything filename)
   (es/add-example "e194bda67affc5915db2460bd4bc29a6"

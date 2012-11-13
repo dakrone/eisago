@@ -1,5 +1,6 @@
 (ns eisago.api
-  (:require [eisago.es :as es]
+  (:require [cheshire.core :as json]
+            [eisago.es :as es]
             [laeggen.core :as laeggen]
             [laeggen.dispatch :as dispatch]))
 
@@ -21,7 +22,7 @@
   ([{:keys [query-string] :as req}]
      (if query-string
        (let [results (es/search query-string)]
-         {:status 200 :body results})
+         {:status 200 :body (json/encode results)})
        {:status 404 :body "Must specify a query!"}))
   ([req lib]
      (search (update-in req [:query-string] assoc :library lib)))
