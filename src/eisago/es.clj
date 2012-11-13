@@ -7,7 +7,7 @@
   (:import (org.apache.commons.codec.digest DigestUtils)))
 
 ;; TODO: configify these three settings
-(def es-url "http://localhost:9200")
+(def es-url "http://localhost:9200/")
 (def es-index "clojuredocs")
 (def es-opts {:basic-auth "user:Passw0rd"
               :debug false
@@ -31,28 +31,71 @@
 (defn delete-index
   "Delete an index with the given name."
   [idx-name]
-  (http/delete (str es-url "/" idx-name) es-opts))
+  (http/delete (str es-url idx-name) es-opts))
 
 (defn create-index
   "Create an index with the given name."
   [idx-name]
   (let [settings {:number_of_shards 10 :number_of_replicas 0}
         body (json/encode {:mappings (mapping) :settings settings})]
-    (http/post (str es-url "/" idx-name) (assoc es-opts :body body))))
+    (http/post (str es-url idx-name) (assoc es-opts :body body))))
 
 (defn index-exists?
   "Check whether the clojuredocs index exists."
   []
-  (= 200 (:status (http/head (str es-url "/" es-index) es-opts))))
+  (= 200 (:status (http/head (str es-url es-index) es-opts))))
 
 (defn put-doc
   "Insert a document into ES using a HTTP PUT request"
   [{:keys [index type id doc routing]}]
   (let [body (json/encode (assoc doc :index-date (java.util.Date.)))]
-    (http/put (str es-url "/" index "/" type "/" id)
+    (http/put (str es-url index "/" type "/" id)
               (merge es-opts
                      {:body body}
                      (when routing {:query-params {:routing routing}})))))
+
+(defn- scroll-fn
+  "Internal function for scrolling."
+  [timeout sid]
+  (lazy-seq
+   (let [results (-> (http/get (str es-url "_search/scroll")
+                               (merge es-opts
+                                      {:query-params {"search_type" "scan"
+                                                      "scroll" timeout
+                                                      "scroll_id" sid}}))
+                     :body)
+         sid (:_scroll_id results)]
+     (when-let [hits (seq (-> results :hits :hits))]
+       (concat hits (scroll-fn timeout sid))))))
+
+(defn scroll
+  "Given a query and scroll options, return a lazy seq of all
+  documents matching that using scrolling documents.
+
+  Use like: (scroll \"*:*\" {:_type \"project\" :fields [:id :name :group]})"
+  [q opts]
+  (let [timeout (or (:_timeout opts) "10m")
+        opts (merge {:size 30} opts)
+        query-body (json/encode
+                    (merge
+                     {:query {:query_string {:default_field :name :query q}}}
+                     (dissoc opts :_timeout :_type)))
+        initial-resp (-> (http/post
+                          (if (:_type opts)
+                            (str es-url es-index "/"
+                                 (name (:_type opts)) "/_search")
+                            (str es-url es-index "/_search"))
+                          (merge es-opts {:query-params {"search_type" "scan"
+                                                         "scroll" timeout}
+                                          :body query-body}))
+                         :body)
+        total-hits (-> initial-resp :hits :total)
+        initial-scroll-id (:_scroll_id initial-resp)
+        all-hits (map :fields
+                      (concat (-> initial-resp :hits :hits)
+                              (scroll-fn timeout initial-scroll-id)))]
+    (when all-hits
+      (with-meta all-hits {:total total-hits}))))
 
 (defn project-doc
   "Given a metadata clojure map, preare an ES doc about the project
@@ -137,7 +180,7 @@
         q-str (json/encode {:query
                             {:query_string
                              {:query (str "parent-id:" id)}}})
-        data (->> (http/get (str es-url "/" es-index "/" (name type) "/_search")
+        data (->> (http/get (str es-url es-index "/" (name type) "/_search")
                             (merge es-opts {:query-params {:fields fields
                                                            :size 1000}
                                             :body q-str}))
@@ -193,7 +236,7 @@
   (let [fields (str "id,project,name,ns,arglists,library,lib-version,"
                     "line,file,doc,index-date,source")
         parent (-> (http/get (str es-url "/" es-index "/var/"
-                                (id-of project ns varname))
+                                  (id-of project ns varname))
                              (merge es-opts {:query-params {:fields fields}}))
                    :body
                    :fields)
@@ -204,6 +247,13 @@
         ;; correct, but the parent ends up getting just a Long instead
         ;; of a date string.
         #_(update-in [:index-date] #(java.util.Date. (long %))))))
+
+(defn all-projects
+  "Return a seq of all projects eisago knows about."
+  []
+  (scroll "*:*" {:_type "project"
+                 :fields [:id :name :group :version
+                          :description :license :index-date]}))
 
 ;; fns used for testing/etc
 (defn drop-indices []
