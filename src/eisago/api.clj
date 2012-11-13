@@ -12,8 +12,18 @@
   [req]
   {:status 404 :body "Stuff's missing yo."})
 
+(defn not-done-yet
+  [req & things]
+  {:status 200 :body "Implement me!"})
+
 (def urls
   (dispatch/urls
+   #"^/examples/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
+   #"^/comments/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
+   #"^/search/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
+   #"^/search/([^/]+)/([^/]+)$" not-done-yet
+   #"^/search/([^/]+)$" not-done-yet
+   #"^/search$" not-done-yet
    #"^/$" #'hello
    #"^/([^/]+)$" #'hello
    :404 #'missing))
