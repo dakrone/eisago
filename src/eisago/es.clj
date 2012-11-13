@@ -132,7 +132,7 @@
    :project (str (:group project) "/" (:name project))
    :name (:name var)
    :ns (name ns)
-   :arglists (:arglists var)
+   :arglists (str (seq (:arglists var)))
    :library (:name project)
    :lib-version (:version project)
    :line (:line var)

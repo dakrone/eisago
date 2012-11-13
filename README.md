@@ -74,7 +74,7 @@ Or, from inside `eisago.import`:
 
 ## Known issues
 
-- still have some issues with `arglist` in the ES mapping
+- <del>still have some issues with `arglist` in the ES mapping</del>
 
 ## License
 
