@@ -12,7 +12,7 @@
   "Reads a gzipped json file into the clojure datastructure known as
   the 'metadata map'"
   [filename]
-  (with-open [is (-> filename io/resource io/file io/input-stream)
+  (with-open [is (-> filename io/file io/input-stream)
               gz (io/reader (GZIPInputStream. is))]
     (json/decode-stream gz true)))
 
@@ -26,10 +26,10 @@
     (es/index-project data)
     (es/index-all-vars data)))
 
-(defn test-it [& [filename]]
+(defn- test-it [& [filename]]
   ;; connection-pool brings it from ~12 seconds to ~4.5
   (http/with-connection-pool {}
-    (index-everything (or filename "clojure-1.4.0.json.gz"))
+    (index-everything (or filename "test/clojure-1.4.0.json.gz"))
     (es/add-example "e194bda67affc5915db2460bd4bc29a6"
                     "This is an example for reduce.")
     (es/add-example "e194bda67affc5915db2460bd4bc29a6"
