@@ -15,12 +15,21 @@ First download the latest ElasticSearch release from the
 ```
 
 Then make sure you have a "clojure-1.4.0.json.gz" file (if you don't,
-use [cadastre](https://github.com/dakrone/cadastre) to generate one).
+use [lein-clojuredocs](https://github.com/dakrone/lein-clojuredocs) or
+[cadastre](https://github.com/dakrone/cadastre) to generate one).
 
-Next, from inside eisago.import:
+To import a file using leiningen:
+
+```
+% lein eisago /path/to/clj-http-0.5.7.json.gz
+Importing /path/to/clj-http-0.5.7.json.gz...
+Done importing /path/to/clj-http-0.5.7.json.gz
+```
+
+Or, from inside eisago.import:
 
 ```clojure
-(test-it "clojure-1.4.0.json.gz")
+(test-it "/path/to/clojure-1.4.0.json.gz")
 
 (clojure.pprint/pprint (meta-for "clojure" "clojure.core" "reduce"))
 {:arglists [["f" "coll"] ["f" "val" "coll"]],
