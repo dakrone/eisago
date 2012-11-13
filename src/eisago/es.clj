@@ -174,21 +174,22 @@
 (defn child-for
   "Generic method to retrieve the children for a particular type,
   project, namespace and var name."
-  [type project ns varname]
-  (let [fields "id,body,parent-id,index-date,type"
-        id (id-of project ns varname)
-        q-str (json/encode {:query
-                            {:query_string
-                             {:query (str "parent-id:" id)}}})
-        data (->> (http/get (str es-url es-index "/" (name type) "/_search")
-                            (merge es-opts {:query-params {:fields fields
-                                                           :size 1000}
-                                            :body q-str}))
-                  :body
-                  :hits
-                  :hits
-                  (map munge-child))]
-    data))
+  ([type project ns varname]
+     (child-for type (id-of project ns varname)))
+  ([type id]
+     (let [fields "id,body,parent-id,index-date,type"
+           q-str (json/encode {:query
+                               {:query_string
+                                {:query (str "parent-id:" id)}}})
+           data (->> (http/get (str es-url es-index "/" (name type) "/_search")
+                               (merge es-opts {:query-params {:fields fields
+                                                              :size 1000}
+                                               :body q-str}))
+                     :body
+                     :hits
+                     :hits
+                     (map munge-child))]
+       data)))
 
 (defn add-child
   "Generic method to add a child doc for the given type, es-id and text"
@@ -232,21 +233,44 @@
 (defn meta-for
   "Return the var metadata and children for a given project, namespace and
   var name."
-  [project ns varname]
-  (let [fields (str "id,project,name,ns,arglists,library,lib-version,"
-                    "line,file,doc,index-date,source")
-        parent (-> (http/get (str es-url "/" es-index "/var/"
-                                  (id-of project ns varname))
-                             (merge es-opts {:query-params {:fields fields}}))
-                   :body
-                   :fields)
-        children (child-for "example,comment" project ns varname)]
-    (-> parent
-        (assoc :children children)
-        ;; TODO: figure out why the children get dates that look
-        ;; correct, but the parent ends up getting just a Long instead
-        ;; of a date string.
-        #_(update-in [:index-date] #(java.util.Date. (long %))))))
+  ([project ns varname]
+     (meta-for (id-of project ns varname)))
+  ([id]
+     (let [fields (str "id,project,name,ns,arglists,library,lib-version,"
+                       "line,file,doc,index-date,source")
+           parent (-> (http/get (str es-url "/" es-index "/var/"
+                                     id)
+                                (merge es-opts {:query-params {:fields fields}}))
+                      :body
+                      :fields)
+           children (child-for "example,comment" id)]
+       (-> parent
+           (assoc :children children)))))
+
+(defn- munge-result
+  [result]
+  (assoc (:fields result) :score (:_score result)))
+
+(defn search
+  "Return a seq of all docs for the given query, lib and ns are optional."
+  [{:keys [query lib ns name]}]
+  (let [fields "id,project,name,ns,arglists,library"
+        must (concat nil (when lib [{:term {:library lib}}]))
+        must (concat must (when ns [{:term {:ns ns}}]))
+        must (concat must (when name [{:term {:name name}}]))
+        q {:query {:bool (merge (when query
+                                  {:should [{:query_string {:query query}}]})
+                                (when (seq must) {:must must}))}}
+        q-str (json/encode q)
+        results (-> (http/post (str es-url "/" es-index "/var/_search")
+                               (merge es-opts
+                                      {:query-params {:fields fields}
+                                       :body q-str}))
+                    :body)
+        hits {:hits (map munge-result (-> results :hits :hits))
+              :total (-> results :hits :total)
+              :time (-> results :took)}]
+    hits))
 
 (defn all-projects
   "Return a seq of all projects eisago knows about."
