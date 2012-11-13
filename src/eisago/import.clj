@@ -29,7 +29,7 @@
 (defn- test-it [& [filename]]
   ;; connection-pool brings it from ~12 seconds to ~4.5
   (http/with-connection-pool {}
-    (index-everything (or filename "test/clojure-1.4.0.json.gz"))
+    (index-everything filename)
     (es/add-example "e194bda67affc5915db2460bd4bc29a6"
                     "This is an example for reduce.")
     (es/add-example "e194bda67affc5915db2460bd4bc29a6"
