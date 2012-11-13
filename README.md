@@ -1,4 +1,4 @@
-# eisago
+# Eisago
 
 Next-gen clojuredocs importer and API
 
@@ -20,13 +20,13 @@ use [lein-clojuredocs](https://github.com/dakrone/lein-clojuredocs) or
 
 To import a file using leiningen:
 
-```
+```shell
 % lein eisago /path/to/clj-http-0.5.7.json.gz
 Importing /path/to/clj-http-0.5.7.json.gz...
 Done importing /path/to/clj-http-0.5.7.json.gz
 ```
 
-Or, from inside eisago.import:
+Or, from inside `eisago.import`:
 
 ```clojure
 (test-it "/path/to/clojure-1.4.0.json.gz")
