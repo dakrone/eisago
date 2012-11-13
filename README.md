@@ -17,10 +17,9 @@ First download the latest ElasticSearch release from the
 Then make sure you have a "clojure-1.4.0.json.gz" file (if you don't,
 use [cadastre](https://github.com/dakrone/cadastre) to generate one).
 
-Next, from inside eisago.core:
+Next, from inside eisago.import:
 
 ```clojure
-(create-indices)
 (test-it "clojure-1.4.0.json.gz")
 
 (clojure.pprint/pprint (meta-for "clojure" "clojure.core" "reduce"))
@@ -59,8 +58,8 @@ Next, from inside eisago.core:
 
 ## Progress
 
-- import (in progress, almost done)
-- api (not started yet)
+- import (should be relatively stable, could use more features)
+- api (started, but no features yet)
 - migration tool (not started yet)
 
 ## License
