@@ -14,9 +14,10 @@ First download the latest ElasticSearch release from the
 % bin/elasticsearch -f
 ```
 
-Then make sure you have a "clojure-1.4.0.json.gz" file (if you don't,
-use [lein-clojuredocs](https://github.com/dakrone/lein-clojuredocs) or
-[cadastre](https://github.com/dakrone/cadastre) to generate one).
+Then make sure you have a "clojure-1.4.0.json.gz" file (or a file for
+whatever project you'd like to import, if you don't have one, use
+[lein-clojuredocs](https://github.com/dakrone/lein-clojuredocs) or
+[cadastre](https://github.com/dakrone/cadastre) to generate one.
 
 To import a file using leiningen:
 
