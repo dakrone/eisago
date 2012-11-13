@@ -172,8 +172,8 @@
 ;; on ES child docs.
 
 (defn child-for
-  "Generic method to retrieve the children for a particular type,
-  project, namespace and var name."
+  "Generic method to retrieve the children for either an id, or a particular
+  type,project, namespace and var name."
   ([type project ns varname]
      (child-for type (id-of project ns varname)))
   ([type id]
@@ -231,8 +231,8 @@
   (child-for :example project ns varname))
 
 (defn meta-for
-  "Return the var metadata and children for a given project, namespace and
-  var name."
+  "Return the var metadata and children for either an id, or a given
+  project, namespace and var name."
   ([project ns varname]
      (meta-for (id-of project ns varname)))
   ([id]
@@ -248,6 +248,7 @@
            (assoc :children children)))))
 
 (defn- munge-result
+  "take an ES result, returning all the fields with the :score added."
   [result]
   (assoc (:fields result) :score (:_score result)))
 
