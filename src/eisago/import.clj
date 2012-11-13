@@ -21,6 +21,8 @@
   index all the metadata into ES."
   [filename]
   (let [data (read-json-file filename)]
+    (when-not (es/index-exists?)
+      (es/create-index es/es-index))
     (es/index-project data)
     (es/index-all-vars data)))
 

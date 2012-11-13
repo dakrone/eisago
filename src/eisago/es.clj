@@ -40,6 +40,11 @@
         body (json/encode {:mappings (mapping) :settings settings})]
     (http/post (str es-url "/" idx-name) (assoc es-opts :body body))))
 
+(defn index-exists?
+  "Check whether the clojuredocs index exists."
+  []
+  (= 200 (:status (http/head (str es-url "/" es-index) es-opts))))
+
 (defn put-doc
   "Insert a document into ES using a HTTP PUT request"
   [{:keys [index type id doc routing]}]
