@@ -72,6 +72,10 @@ Or, from inside `eisago.import`:
 - api (started, but no features yet)
 - migration tool (not started yet)
 
+## Known issues
+
+- still have some issues with `arglist` in the ES mapping
+
 ## License
 
 Copyright © 2012 Matthew Lee Hinman
