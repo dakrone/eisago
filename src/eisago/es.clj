@@ -4,7 +4,8 @@
             [clj-http.client :as http]
             [clojure.java.io :as io]
             [clojure.pprint :refer :all])
-  (:import (org.apache.commons.codec.digest DigestUtils)))
+  (:import (org.apache.commons.codec.digest DigestUtils)
+           (org.apache.lucene.queryparser.classic QueryParserBase)))
 
 ;; TODO: configify these three settings
 (def es-url "http://localhost:9200/")
@@ -139,6 +140,7 @@
    :file (:file var)
    :doc (:doc var)
    :source (:source var)})
+
 (defn get-all-var-docs
   "Given the metadata map, create all of the var docs for the project."
   [m]
@@ -256,11 +258,15 @@
   "Return a seq of all docs for the given query, lib and ns are optional."
   [{:keys [query lib ns name]}]
   (let [fields "id,project,name,ns,arglists,library"
-        must (concat nil (when lib [{:term {:library lib}}]))
+        must (concat nil (when lib
+                           [{:term {:library lib}}]))
         must (concat must (when ns [{:term {:ns ns}}]))
-        must (concat must (when name [{:term {:name name}}]))
+        must (concat must (when name
+                            [{:term {:name name}}]))
         q {:query {:bool (merge (when query
-                                  {:should [{:query_string {:query query}}]})
+                                  {:should
+                                   [{:query_string
+                                     {:query (QueryParserBase/escape query)}}]})
                                 (when (seq must) {:must must}))}}
         q-str (json/encode q)
         results (-> (http/post (str es-url "/" es-index "/var/_search")

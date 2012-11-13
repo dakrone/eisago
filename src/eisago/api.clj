@@ -25,11 +25,11 @@
          {:status 200 :body (json/encode results)})
        {:status 404 :body "Must specify a query!"}))
   ([req lib]
-     (search (update-in req [:query-string] assoc :library lib)))
+     (search (update-in req [:query-string] assoc :lib lib)))
   ([req lib namespace]
      (search (-> req
-                 (update-in [:query-string] assoc :library lib)
-                 (update-in [:query-string] assoc :namespace namespace)))))
+                 (update-in [:query-string] assoc :lib lib)
+                 (update-in [:query-string] assoc :ns namespace)))))
 
 (def urls
   (dispatch/urls

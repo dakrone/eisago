@@ -21,11 +21,13 @@
        :properties {:id {:store "yes"
                          :index "not_analyzed"
                          :type "string"}
-                    :project {:store "yes" :type "string"}
-                    :name {:store "yes" :type "string"}
-                    :ns {:store "yes" :type "string"}
-                    :arglists {:store "yes" :type "string"}
-                    :library {:store "yes" :type "string"}
+                    :project {:store "yes" :type "string" :index "not_analyzed"}
+                    :name {:store "yes" :type "string" :index "not_analyzed"}
+                    :ns {:store "yes" :type "string" :index "not_analyzed"}
+                    :arglists {:store "yes"
+                               :type "string"
+                               :index "not_analyzed"}
+                    :library {:store "yes" :type "string" :index "not_analyzed"}
                     :lib-version {:store "yes" :type "string"}
                     :line {:store "yes" :type "integer"}
                     :file {:store "yes" :type "string"}

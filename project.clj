@@ -9,5 +9,6 @@
                  [clj-http "0.5.7"]
                  [cheshire "4.0.4"]
                  [commons-codec "1.6"]
-                 [laeggen "0.3"]]
+                 [laeggen "0.3"]
+                 [org.apache.lucene/lucene-queryparser "4.0.0"]]
   :main eisago.core)
