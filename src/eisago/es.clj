@@ -22,10 +22,13 @@
                          slurp
                          read-string)))
 
-(defn mapping [] @mapping*)
+(defn mapping
+  "Get the ES mapping currently used."
+  []
+  @mapping*)
 
 (defn md5
-  "MD5 a string."
+  "Return the hex for a MD5 sum of a string."
   [s]
   (DigestUtils/md5Hex s))
 
@@ -55,20 +58,6 @@
                      {:body body}
                      (when routing {:query-params {:routing routing}})))))
 
-(defn- scroll-fn
-  "Internal function for scrolling."
-  [timeout sid]
-  (lazy-seq
-   (let [results (-> (http/get (str es-url "_search/scroll")
-                               (merge es-opts
-                                      {:query-params {"search_type" "scan"
-                                                      "scroll" timeout
-                                                      "scroll_id" sid}}))
-                     :body)
-         sid (:_scroll_id results)]
-     (when-let [hits (seq (-> results :hits :hits))]
-       (concat hits (scroll-fn timeout sid))))))
-
 (defn scroll
   "Given a query and scroll options, return a lazy seq of all
   documents matching that using scrolling documents.
@@ -76,6 +65,18 @@
   Use like: (scroll \"*:*\" {:_type \"project\" :fields [:id :name :group]})"
   [q opts]
   (let [timeout (or (:_timeout opts) "10m")
+        scroll-fn (fn scroll-fn
+                    [sid]
+                    (lazy-seq
+                     (let [params {:query-params {"search_type" "scan"
+                                                  "scroll" timeout
+                                                  "scroll_id" sid}}
+                           results (-> (http/get (str es-url "_search/scroll")
+                                                 (merge es-opts params))
+                                       :body)
+                           sid (:_scroll_id results)]
+                       (when-let [hits (seq (-> results :hits :hits))]
+                         (concat hits (scroll-fn sid))))))
         opts (merge {:size 30} opts)
         query-body (json/encode
                     (merge
@@ -94,7 +95,7 @@
         initial-scroll-id (:_scroll_id initial-resp)
         all-hits (map :fields
                       (concat (-> initial-resp :hits :hits)
-                              (scroll-fn timeout initial-scroll-id)))]
+                              (scroll-fn initial-scroll-id)))]
     (when all-hits
       (with-meta all-hits {:total total-hits}))))
 
