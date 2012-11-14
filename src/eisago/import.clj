@@ -3,7 +3,6 @@
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.java.io :as io]
-            [clojure.pprint :refer :all]
             [eisago.es :as es])
   (:import (java.util.zip GZIPInputStream)
            (org.apache.commons.codec.digest DigestUtils)))
@@ -23,7 +22,7 @@
   (http/with-connection-pool {}
     (let [data (read-json-file filename)]
       (when-not (es/index-exists?)
-        (es/create-index es/es-index))
+        (es/create-indices))
       (es/index-project data)
       (es/index-all-vars data))))
 

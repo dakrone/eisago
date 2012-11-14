@@ -1,5 +1,6 @@
 (ns eisago.api
   (:require [cheshire.core :as json]
+            [eisago.config :refer [config]]
             [eisago.es :as es]
             [laeggen.core :as laeggen]
             [laeggen.dispatch :as dispatch]))
@@ -44,7 +45,4 @@
    :404 #'missing))
 
 (defn server-start []
-  (laeggen/start {:port 5000
-                  :append-slash? false
-                  :urls urls
-                  :websocket true}))
+  (laeggen/start (assoc (config :laeggen) :urls urls)))

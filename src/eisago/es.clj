@@ -3,19 +3,10 @@
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.java.io :as io]
-            [clojure.pprint :refer :all])
+            [clojure.pprint :refer :all]
+            [eisago.config :refer [config]])
   (:import (org.apache.commons.codec.digest DigestUtils)
            (org.apache.lucene.queryparser.classic QueryParserBase)))
-
-;; TODO: configify these three settings
-(def es-url "http://localhost:9200/")
-(def es-index "clojuredocs")
-(def es-opts {:basic-auth "user:Passw0rd"
-              :debug false
-              :debug-body false
-              :save-request? false
-              :as :json
-              :throw-exceptions false})
 
 (def mapping* (delay (-> "mapping.clj"
                          io/resource
@@ -35,26 +26,29 @@
 (defn delete-index
   "Delete an index with the given name."
   [idx-name]
-  (http/delete (str es-url idx-name) es-opts))
+  (http/delete (str (config :es-url) idx-name)
+               (config :es-http-opts)))
 
 (defn create-index
   "Create an index with the given name."
   [idx-name]
   (let [settings {:number_of_shards 10 :number_of_replicas 0}
         body (json/encode {:mappings (mapping) :settings settings})]
-    (http/post (str es-url idx-name) (assoc es-opts :body body))))
+    (http/post (str (config :es-url) idx-name)
+               (assoc (config :es-http-opts) :body body))))
 
 (defn index-exists?
   "Check whether the clojuredocs index exists."
   []
-  (= 200 (:status (http/head (str es-url es-index) es-opts))))
+  (= 200 (:status (http/head (str (config :es-url) (config :es-index))
+                             (config :es-http-opts)))))
 
 (defn put-doc
   "Insert a document into ES using a HTTP PUT request"
   [{:keys [index type id doc routing]}]
   (let [body (json/encode (assoc doc :index-date (java.util.Date.)))]
-    (http/put (str es-url index "/" type "/" id)
-              (merge es-opts
+    (http/put (str (config :es-url) index "/" type "/" id)
+              (merge (config :es-http-opts)
                      {:body body}
                      (when routing {:query-params {:routing routing}})))))
 
@@ -71,8 +65,10 @@
                      (let [params {:query-params {"search_type" "scan"
                                                   "scroll" timeout
                                                   "scroll_id" sid}}
-                           results (-> (http/get (str es-url "_search/scroll")
-                                                 (merge es-opts params))
+                           results (-> (http/get (str (config :es-url)
+                                                      "_search/scroll")
+                                                 (merge (config :es-http-opts)
+                                                        params))
                                        :body)
                            sid (:_scroll_id results)]
                        (when-let [hits (seq (-> results :hits :hits))]
@@ -84,12 +80,14 @@
                      (dissoc opts :_timeout :_type)))
         initial-resp (-> (http/post
                           (if (:_type opts)
-                            (str es-url es-index "/"
+                            (str (config :es-url) (config :es-index) "/"
                                  (name (:_type opts)) "/_search")
-                            (str es-url es-index "/_search"))
-                          (merge es-opts {:query-params {"search_type" "scan"
-                                                         "scroll" timeout}
-                                          :body query-body}))
+                            (str (config :es-url) (config :es-index)
+                                 "/_search"))
+                          (merge (config :es-http-opts)
+                                 {:query-params {"search_type" "scan"
+                                                 "scroll" timeout}
+                                  :body query-body}))
                          :body)
         total-hits (-> initial-resp :hits :total)
         initial-scroll-id (:_scroll_id initial-resp)
@@ -112,7 +110,7 @@
   document from it"
   [m]
   (let [doc (project-doc m)]
-    (:body (put-doc {:index es-index
+    (:body (put-doc {:index (config :es-index)
                      :type "project"
                      :id (:id doc)
                      :doc doc}))))
@@ -155,7 +153,7 @@
   "Index a single doc into ES"
   [doc]
   (let [es-doc {:doc doc
-                :index es-index
+                :index (config :es-index)
                 :type "var"
                 :id (:id doc)}]
     (:body (put-doc es-doc))))
@@ -184,10 +182,12 @@
            q-str (json/encode {:query
                                {:query_string
                                 {:query (str "parent-id:" id)}}})
-           data (->> (http/get (str es-url es-index "/" (name type) "/_search")
-                               (merge es-opts {:query-params {:fields fields
-                                                              :size 1000}
-                                               :body q-str}))
+           data (->> (http/get (str (config :es-url) (config :es-index)
+                                    "/" (name type) "/_search")
+                               (merge (config :es-http-opts)
+                                      {:query-params {:fields fields
+                                                      :size 1000}
+                                       :body q-str}))
                      :body
                      :hits
                      :hits
@@ -199,7 +199,7 @@
   [type es-id text]
   (let [child-id (md5 (str (java.util.UUID/randomUUID)))
         es-doc {:id child-id
-                :index es-index
+                :index (config :es-index)
                 :type (name type)
                 :routing es-id
                 :doc {:body text
@@ -241,9 +241,10 @@
   ([id]
      (let [fields (str "id,project,name,ns,arglists,library,lib-version,"
                        "line,file,doc,index-date,source")
-           parent (-> (http/get (str es-url "/" es-index "/var/"
-                                     id)
-                                (merge es-opts {:query-params {:fields fields}}))
+           parent (-> (http/get (str (config :es-url) "/" (config :es-index)
+                                     "/var/" id)
+                                (merge (config :es-http-opts)
+                                       {:query-params {:fields fields}}))
                       :body
                       :fields)
            children (child-for "example,comment" id)]
@@ -270,8 +271,9 @@
                                      {:query (QueryParserBase/escape query)}}]})
                                 (when (seq must) {:must must}))}}
         q-str (json/encode q)
-        results (-> (http/post (str es-url "/" es-index "/var/_search")
-                               (merge es-opts
+        results (-> (http/post (str (config :es-url) "/"
+                                    (config :es-index) "/var/_search")
+                               (merge (config :es-http-opts)
                                       {:query-params {:fields fields}
                                        :body q-str}))
                     :body)
@@ -289,7 +291,7 @@
 
 ;; fns used for testing/etc
 (defn drop-indices []
-  (delete-index es-index))
+  (delete-index (config :es-index)))
 
 (defn create-indices []
-  (create-index es-index))
+  (create-index (config :es-index)))

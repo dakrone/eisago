@@ -3,4 +3,4 @@
 
 (def config carica/config)
 
-(def local-config carica/local-config)
+(def local-config carica/override-config)
