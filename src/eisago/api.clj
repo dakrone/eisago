@@ -5,21 +5,15 @@
             [laeggen.core :as laeggen]
             [laeggen.dispatch :as dispatch]))
 
-(defn hello
-  ([req]
-     {:status 200 :body "Stuff will go here."})
-  ([req thing]
-     {:status 200 :body (str thing " will go here.")}))
-
 (defn missing
+  "Response for non-matching API requests."
   [req]
-  {:status 404 :body "Stuff's missing yo."})
-
-(defn not-done-yet
-  [req & things]
-  {:status 200 :body "Implement me!"})
+  {:status 404 :body (json/encode {:status 404 :message "Invalid request"})})
 
 (defn search
+  "API implementation of searching, lib and namespace can be optionally
+  specified as paths, with name and query optionally specified in
+  the query-string."
   ([{:keys [query-string] :as req}]
      (if query-string
        (let [results (es/search query-string)]
@@ -32,17 +26,37 @@
                  (update-in [:query-string] assoc :lib lib)
                  (update-in [:query-string] assoc :ns namespace)))))
 
+(defn children-for
+  "API implementation of returning examples and comments for a given method/id."
+  ([request id]
+     {:status 200 :body (-> (es/meta-for id)
+                            :children
+                            json/encode)})
+  ([request lib namespace varname]
+     {:status 200 :body (-> (es/meta-for lib namespace varname)
+                            :children
+                            json/encode)}))
+
+(defn doc-for
+  "API implementation of returning all information for a given method/id."
+  ([request id]
+     {:status 200 :body (json/encode (es/meta-for id))})
+  ([request lib namespace varname]
+     {:status 200 :body (json/encode (es/meta-for lib namespace varname))}))
+
 (def urls
   (dispatch/urls
-   #"^/examples/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
-   #"^/comments/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
-   #"^/search/([^/]+)/([^/]+)/([^/]+)$" not-done-yet
-   #"^/([^/]+)/([^/]+)/_search/?$" search
-   #"^/([^/]+)/_search/?$" search
-   #"^/_search/?$" search
-   #"^/$" #'hello
-   #"^/([^/]+)$" #'hello
+   #"^/doc/([^/]+)/?$" #'doc-for
+   #"^/doc/([^/]+)/([^/]+)/([^/]+)/?$" #'doc-for
+
+   #"^/meta/([^/]+)/?$" #'children-for
+   #"^/meta/([^/]+)/([^/]+)/([^/]+)/?$" #'children-for
+
+   #"^/([^/]+)/([^/]+)/_search/?$" #'search
+   #"^/([^/]+)/_search/?$" #'search
+   #"^/_search/?$" #'search
+
    :404 #'missing))
 
-(defn server-start []
+(defn start-server []
   (laeggen/start (assoc (config :laeggen) :urls urls)))

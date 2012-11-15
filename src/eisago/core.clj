@@ -4,4 +4,4 @@
 
 (defn -main [& _]
   (println "Starting Eisago API...")
-  (api/server-start))
+  (api/start-server))

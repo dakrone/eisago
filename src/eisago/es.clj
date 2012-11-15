@@ -248,8 +248,8 @@
                       :body
                       :fields)
            children (child-for "example,comment" id)]
-       (-> parent
-           (assoc :children children)))))
+       (when parent
+         (assoc parent :children children)))))
 
 (defn- munge-result
   "take an ES result, returning all the fields with the :score added."
