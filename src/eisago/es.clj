@@ -295,7 +295,7 @@
   "Return a seq of all projects eisago knows about."
   []
   (scroll "*:*" {:_type "project"
-                 :fields [:id :name :group :version
+                 :fields [:id :name :group :version :url
                           :description :license :index-date]}))
 
 ;; fns used for testing/etc
