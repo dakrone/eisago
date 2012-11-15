@@ -54,6 +54,11 @@
                        :examples (or (es/es-count :example) 0)
                        :comments (or (es/es-count :comment) 0)})})
 
+(defn all-projects
+  "API implementation for returning all projects"
+  [request]
+  {:status 200 :body (json/encode (es/all-projects))})
+
 (def urls
   (dispatch/urls
    #"^/doc/([^/]+)/?$" #'doc-for
@@ -65,6 +70,8 @@
    #"^/([^/]+)/([^/]+)/_search/?$" #'search
    #"^/([^/]+)/_search/?$" #'search
    #"^/_search/?$" #'search
+
+   #"^/_projects/?" #'all-projects
 
    #"^/_stats/?$" #'stats
 
