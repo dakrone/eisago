@@ -172,6 +172,7 @@ Expect a fully documented API as soon as one is entirely decided upon.
 ## Known issues
 
 - <del>still have some issues with `arglist` in the ES mapping</del>
+- there's no way to add a comment or example with the API yet because yea, authentication...
 
 ## License
 
