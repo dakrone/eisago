@@ -132,31 +132,17 @@ lib - library name (exact match)
 ns - namespace (exact match)
 ```
 
-### http://localhost:5000/doc
+### http://localhost:5000/doc/<project>/<namespace>/<varname>
 
-### http://localhost:5000/meta
+Returns all information about a var, including comments and examples.
+Instead of project/namespace/varname, the id of the var can be
+specified if desired:
 
-```json
-% curl -s "localhost:5000/_search?name=reduce" | python -mjson.tool
-{
-    "hits": [
-        {
-            "arglists": "([\"f\" \"coll\"] [\"f\" \"val\" \"coll\"])",
-            "id": "e194bda67affc5915db2460bd4bc29a6",
-            "library": "clojure",
-            "name": "reduce",
-            "ns": "clojure.core",
-            "project": "org.clojure/clojure",
-            "score": 5.248495
-        }
-    ],
-    "time": 2,
-    "total": 1
-}
-```
+`% curl -s "localhost:5000/doc/clojure/clojure.core/reduce" | python -mjson.tool`
+`% curl -s "localhost:5000/doc/e194bda67affc5915db2460bd4bc29a6" | python -mjson.tool`
+
 
 ```json
-% curl -s "localhost:5000/doc/clojure/clojure.core/reduce" | python -mjson.tool
 {
     "arglists": "([\"f\" \"coll\"] [\"f\" \"val\" \"coll\"])",
     "children": [
@@ -196,8 +182,16 @@ ns - namespace (exact match)
 }
 ```
 
+### http://localhost:5000/meta/<library>/<namespace>/<varname>
+
+Returns all metadata information about a var, (only comments and
+examples). Instead of project/namespace/varname, the id of the var can
+be specified if desired:
+
+`% curl -s "localhost:5000/meta/clojure/clojure.core/reduce" | python -mjson.tool`
+`% curl -s "localhost:5000/meta/e194bda67affc5915db2460bd4bc29a6" | python -mjson.tool`
+
 ```json
-% curl -s "localhost:5000/meta/clojure/clojure.core/reduce" | python -mjson.tool
 [
     {
         "body": "This is an example for reduce.",
@@ -223,18 +217,7 @@ ns - namespace (exact match)
 ]
 ```
 
-```json
-curl -s "localhost:5000/_stats" | python -mjson.tool
-{
-    "comments": 1,
-    "examples": 2,
-    "projects": 3,
-    "total": 1469,
-    "vars": 1463
-}
-```
-
-Expect a fully documented API as soon as one is entirely decided upon.
+Expect that this API might change between now and any time this is released.
 
 ## Progress
 
