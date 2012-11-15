@@ -119,7 +119,7 @@ Returns a list of all projects eisago knows about
 Also supports:
 
 ```
-http://localhost:5000/<project>/_search
+http://localhost:5000/{project}/_search
 http://localhost:5000/_search
 ```
 
@@ -130,6 +130,36 @@ q - query to search the database for
 name - var name (exact match)
 lib - library name (exact match)
 ns - namespace (exact match)
+```
+
+For example:
+`∴ curl -s "localhost:5000/cheshire/_search?name=generate-string" | python -mjson.tool`
+
+```json
+{
+    "hits": [
+        {
+            "arglists": "",
+            "id": "e392c2874d642416631e53dc9e50ebff",
+            "library": "cheshire",
+            "name": "generate-string",
+            "ns": "cheshire.custom",
+            "project": "cheshire/cheshire",
+            "score": 7.7521086
+        },
+        {
+            "arglists": "([\"obj\"] [\"obj\" \"opt-map\"])",
+            "id": "a4ddb023bd73260922955dca6306aedd",
+            "library": "cheshire",
+            "name": "generate-string",
+            "ns": "cheshire.core",
+            "project": "cheshire/cheshire",
+            "score": 7.5217447
+        }
+    ],
+    "time": 15,
+    "total": 2
+}
 ```
 
 ### /doc/{project}/{namespace}/{varname}
