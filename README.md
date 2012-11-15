@@ -260,6 +260,11 @@ Expect that this API might change between now and any time this is released.
 - API for adding examples
 - API for adding comments
 
+## See Also
+
+- [lein-clojuredocs](http://github.com/dakrone/lein-clojuredocs)
+- [cadastre](http://github.com/dakrone/cadastre)
+
 ## License
 
 Copyright © 2012 Matthew Lee Hinman
