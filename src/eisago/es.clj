@@ -258,19 +258,19 @@
 
 (defn search
   "Return a seq of all docs for the given query, lib and ns are optional."
-  [{:keys [query lib ns name]}]
+  [{:keys [q lib ns name]}]
   (let [fields "id,project,name,ns,arglists,library"
         must (concat nil (when lib
                            [{:term {:library lib}}]))
         must (concat must (when ns [{:term {:ns ns}}]))
         must (concat must (when name
                             [{:term {:name name}}]))
-        q {:query {:bool (merge (when query
-                                  {:should
-                                   [{:query_string
-                                     {:query (QueryParserBase/escape query)}}]})
-                                (when (seq must) {:must must}))}}
-        q-str (json/encode q)
+        q-map {:query {:bool (merge (when q
+                                      {:should
+                                       [{:query_string
+                                         {:query (QueryParserBase/escape q)}}]})
+                                    (when (seq must) {:must must}))}}
+        q-str (json/encode q-map)
         results (-> (http/post (str (config :es-url) "/"
                                     (config :es-index) "/var/_search")
                                (merge (config :es-http-opts)
@@ -278,8 +278,8 @@
                                        :body q-str}))
                     :body)
         hits {:hits (map munge-result (-> results :hits :hits))
-              :total (-> results :hits :total)
-              :time (-> results :took)}]
+              :total (or (-> results :hits :total) 0)
+              :time (or (-> results :took) 0)}]
     hits))
 
 (defn all-projects
