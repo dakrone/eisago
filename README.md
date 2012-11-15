@@ -1,6 +1,6 @@
 # Eisago
 
-Next-gen clojuredocs importer and API
+Next-gen clojuredocs importer, API, and (eventually) website.
 
 ## Getting started
 
@@ -66,8 +66,7 @@ Or, from inside `eisago.import`:
 ;; :doc and :source shortened to fit here
 ```
 
-Or, run the web server and try some REST calls (these examples assume
-you imported clojure-1.4.0.json.gz):
+Or, run the web server and try some REST calls (the default port is 5000):
 
 ```
 % lein run
@@ -251,19 +250,15 @@ Expect that this API might change between now and any time this is released.
 
 ## Progress
 
-- import [should be relatively stable]
+- import [stable]
 - api [working, but may change]
-- migration tool [see migrate.clj, requires manual running]
+- migration tool [see migrate.clj, done, but requires manual running]
 - website [not started]
 
 ### To do
 
 - API for adding examples
 - API for adding comments
-
-## Known issues
-
-None right now.
 
 ## License
 
