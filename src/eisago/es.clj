@@ -282,6 +282,15 @@
               :time (or (-> results :took) 0)}]
     hits))
 
+(defn es-count
+  "Generic ES count function that can take an optional ES type and query."
+  [& [type q]]
+  (-> (http/get (str (config :es-url) (config :es-index)
+                     "/" (and type (str (name type) "/")) "_count")
+                (merge (config :es-http-opts) (when q {:query-params {:q q}})))
+      :body
+      :count))
+
 (defn all-projects
   "Return a seq of all projects eisago knows about."
   []

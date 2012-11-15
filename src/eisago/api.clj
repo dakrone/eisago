@@ -44,6 +44,16 @@
   ([request lib namespace varname]
      {:status 200 :body (json/encode (es/meta-for lib namespace varname))}))
 
+(defn stats
+  "API implementation for statistics"
+  [request]
+  {:status 200
+   :body (json/encode {:total (es/es-count)
+                       :projects (es/es-count :project)
+                       :vars (es/es-count :var)
+                       :examples (es/es-count :example)
+                       :comments (es/es-count :comment)})})
+
 (def urls
   (dispatch/urls
    #"^/doc/([^/]+)/?$" #'doc-for
@@ -55,6 +65,8 @@
    #"^/([^/]+)/([^/]+)/_search/?$" #'search
    #"^/([^/]+)/_search/?$" #'search
    #"^/_search/?$" #'search
+
+   #"^/_stats/?$" #'stats
 
    :404 #'missing))
 

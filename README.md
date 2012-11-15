@@ -160,6 +160,17 @@ you imported clojure-1.4.0.json.gz):
 ]
 ```
 
+```json
+curl -s "localhost:5000/_stats" | python -mjson.tool
+{
+    "comments": 1,
+    "examples": 2,
+    "projects": 3,
+    "total": 1469,
+    "vars": 1463
+}
+```
+
 Expect a fully documented API as soon as one is entirely decided upon.
 
 ## Progress
