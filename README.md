@@ -114,7 +114,7 @@ Returns a list of all projects eisago knows about
 ]
 ```
 
-### /<project>/<namespace>/_search
+### /{project}/{namespace}/_search
 
 Also supports:
 
@@ -132,7 +132,7 @@ lib - library name (exact match)
 ns - namespace (exact match)
 ```
 
-### /doc/<project>/<namespace>/<varname>
+### /doc/{project}/{namespace}/{varname}
 
 Returns all information about a var, including comments and examples.
 Instead of project/namespace/varname, the id of the var can be
@@ -182,7 +182,7 @@ specified if desired:
 }
 ```
 
-### /meta/<library>/<namespace>/<varname>
+### /meta/{library}/{namespace}/{varname}
 
 Returns all metadata information about a var, (only comments and
 examples). Instead of project/namespace/varname, the id of the var can
