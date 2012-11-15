@@ -165,7 +165,7 @@ Expect a fully documented API as soon as one is entirely decided upon.
 ## Progress
 
 - import [should be relatively stable]
-- api [not entirely settled upon]
+- api [working, but may change]
 - migration tool [not started]
 - website [not started]
 
