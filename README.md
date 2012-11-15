@@ -32,7 +32,7 @@ Or, from inside `eisago.import`:
 ```clojure
 (test-it "/path/to/clojure-1.4.0.json.gz")
 
-(clojure.pprint/pprint (meta-for "clojure" "clojure.core" "reduce"))
+(clojure.pprint/pprint (es/meta-for "clojure" "clojure.core" "reduce"))
 {:arglists [["f" "coll"] ["f" "val" "coll"]],
  :children
  ({:type "example",
@@ -65,6 +65,102 @@ Or, from inside `eisago.import`:
  :project "org.clojure/clojure"}
 ;; :doc and :source shortened to fit here
 ```
+
+Or, run the web server and try some REST calls (these examples assume
+you imported clojure-1.4.0.json.gz):
+
+```
+% lein run
+```
+
+```
+% curl -s "localhost:5000/_search?name=reduce" | python -mjson.tool
+{
+    "hits": [
+        {
+            "arglists": "([\"f\" \"coll\"] [\"f\" \"val\" \"coll\"])",
+            "id": "e194bda67affc5915db2460bd4bc29a6",
+            "library": "clojure",
+            "name": "reduce",
+            "ns": "clojure.core",
+            "project": "org.clojure/clojure",
+            "score": 5.248495
+        }
+    ],
+    "time": 2,
+    "total": 1
+}
+```
+
+```
+% curl -s "localhost:5000/doc/clojure/clojure.core/reduce" | python -mjson.tool
+{
+    "arglists": "([\"f\" \"coll\"] [\"f\" \"val\" \"coll\"])",
+    "children": [
+        {
+            "body": "This is an example for reduce.",
+            "id": "aa21fbb2034a0492312b0aa316e70b76",
+            "index-date": "2012-11-14T22:32:24Z",
+            "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+            "type": "example"
+        },
+        {
+            "body": "This is a different example for reduce.",
+            "id": "64f279cb443cb1488fb4b57990ae0be8",
+            "index-date": "2012-11-14T22:32:24Z",
+            "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+            "type": "example"
+        },
+        {
+            "body": "This is a comment for reduce.",
+            "id": "bf00599f524b1a8949b9625f245b1eea",
+            "index-date": "2012-11-14T22:32:24Z",
+            "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+            "type": "comment"
+        }
+    ],
+    "doc": "... documentation here ...",
+    "file": "clojure/core.clj",
+    "id": "e194bda67affc5915db2460bd4bc29a6",
+    "index-date": "2012-11-14T22:32:21Z",
+    "lib-version": "1.4.0",
+    "library": "clojure",
+    "line": 6016,
+    "name": "reduce",
+    "ns": "clojure.core",
+    "project": "org.clojure/clojure",
+    "source": "... source code here ..."
+}
+```
+
+```
+% curl -s "localhost:5000/meta/clojure/clojure.core/reduce" | python -mjson.tool
+[
+    {
+        "body": "This is an example for reduce.",
+        "id": "aa21fbb2034a0492312b0aa316e70b76",
+        "index-date": "2012-11-14T22:32:24Z",
+        "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+        "type": "example"
+    },
+    {
+        "body": "This is a different example for reduce.",
+        "id": "64f279cb443cb1488fb4b57990ae0be8",
+        "index-date": "2012-11-14T22:32:24Z",
+        "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+        "type": "example"
+    },
+    {
+        "body": "This is a comment for reduce.",
+        "id": "bf00599f524b1a8949b9625f245b1eea",
+        "index-date": "2012-11-14T22:32:24Z",
+        "parent-id": "e194bda67affc5915db2460bd4bc29a6",
+        "type": "comment"
+    }
+]
+```
+
+Expect a fully documented API as soon as one is entirely decided upon.
 
 ## Progress
 
