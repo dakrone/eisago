@@ -89,12 +89,12 @@ Here is Eisago's API, expressed as a list of regular expressions:
 #"^/_stats/?$"
 ```
 
-### http://localhost:5000/_stats
+### /_stats
 
 Returns statistics for the number of documents in ES:
 `{"total":2865,"projects":6,"vars":1870,"examples":872,"comments":117}`
 
-### http://localhost:5000/_projects
+### /_projects
 
 Returns a list of all projects eisago knows about
 
@@ -114,7 +114,7 @@ Returns a list of all projects eisago knows about
 ]
 ```
 
-### http://localhost:5000/<project>/<namespace>/_search
+### /<project>/<namespace>/_search
 
 Also supports:
 
@@ -132,7 +132,7 @@ lib - library name (exact match)
 ns - namespace (exact match)
 ```
 
-### http://localhost:5000/doc/<project>/<namespace>/<varname>
+### /doc/<project>/<namespace>/<varname>
 
 Returns all information about a var, including comments and examples.
 Instead of project/namespace/varname, the id of the var can be
@@ -182,7 +182,7 @@ specified if desired:
 }
 ```
 
-### http://localhost:5000/meta/<library>/<namespace>/<varname>
+### /meta/<library>/<namespace>/<varname>
 
 Returns all metadata information about a var, (only comments and
 examples). Instead of project/namespace/varname, the id of the var can
