@@ -73,6 +73,69 @@ you imported clojure-1.4.0.json.gz):
 % lein run
 ```
 
+## API documentation
+
+Here is Eisago's API, expressed as a list of regular expressions:
+
+```clojure
+#"^/doc/([^/]+)/?$"
+#"^/doc/([^/]+)/([^/]+)/([^/]+)/?$"
+#"^/meta/([^/]+)/?$"
+#"^/meta/([^/]+)/([^/]+)/([^/]+)/?$"
+#"^/([^/]+)/([^/]+)/_search/?$"
+#"^/([^/]+)/_search/?$"
+#"^/_search/?$"
+#"^/_projects/?"
+#"^/_stats/?$"
+```
+
+### http://localhost:5000/_stats
+
+Returns statistics for the number of documents in ES:
+`{"total":2865,"projects":6,"vars":1870,"examples":872,"comments":117}`
+
+### http://localhost:5000/_projects
+
+Returns a list of all projects eisago knows about
+
+`% curl -s localhost:5000/_projects | python -mjson.tool`
+
+```json
+[
+  {
+    "description": "A Clojure HTTP library wrapping the Apache HttpComponents client.",
+    "group": "clj-http",
+    "id": "cf3a7423d87a2fa41de6a319cba0244a",
+    "index-date": "2012-11-15T14:24:34Z",
+    "name": "clj-http",
+    "url": "https://github.com/dakrone/clj-http/",
+    "version": "0.5.7"
+  }
+]
+```
+
+### http://localhost:5000/<project>/<namespace>/_search
+
+Also supports:
+
+```
+http://localhost:5000/<project>/_search
+http://localhost:5000/_search
+```
+
+Query string options:
+
+```
+q - query to search the database for
+name - var name (exact match)
+lib - library name (exact match)
+ns - namespace (exact match)
+```
+
+### http://localhost:5000/doc
+
+### http://localhost:5000/meta
+
 ```json
 % curl -s "localhost:5000/_search?name=reduce" | python -mjson.tool
 {
