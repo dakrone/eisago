@@ -177,13 +177,17 @@ Expect a fully documented API as soon as one is entirely decided upon.
 
 - import [should be relatively stable]
 - api [working, but may change]
-- migration tool [not started]
+- migration tool [see migrate.clj, requires manual running]
 - website [not started]
+
+### To do
+
+- API for adding examples
+- API for adding comments
 
 ## Known issues
 
-- <del>still have some issues with `arglist` in the ES mapping</del>
-- there's no way to add a comment or example with the API yet because yea, authentication...
+None right now.
 
 ## License
 

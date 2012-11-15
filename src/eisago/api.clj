@@ -48,11 +48,11 @@
   "API implementation for statistics"
   [request]
   {:status 200
-   :body (json/encode {:total (es/es-count)
-                       :projects (es/es-count :project)
-                       :vars (es/es-count :var)
-                       :examples (es/es-count :example)
-                       :comments (es/es-count :comment)})})
+   :body (json/encode {:total (or (es/es-count) 0)
+                       :projects (or (es/es-count :project) 0)
+                       :vars (or (es/es-count :var) 0)
+                       :examples (or (es/es-count :example) 0)
+                       :comments (or (es/es-count :comment) 0)})})
 
 (def urls
   (dispatch/urls

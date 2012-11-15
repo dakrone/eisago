@@ -12,4 +12,6 @@
                  [laeggen "0.3"]
                  [org.apache.lucene/lucene-queryparser "4.0.0"]
                  [sonian/carica "1.0.0"]]
+  :profiles {:dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
+                                  [mysql/mysql-connector-java "5.1.6"]]}}
   :main eisago.core)
