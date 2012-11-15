@@ -73,7 +73,7 @@ you imported clojure-1.4.0.json.gz):
 % lein run
 ```
 
-```
+```json
 % curl -s "localhost:5000/_search?name=reduce" | python -mjson.tool
 {
     "hits": [
@@ -92,7 +92,7 @@ you imported clojure-1.4.0.json.gz):
 }
 ```
 
-```
+```json
 % curl -s "localhost:5000/doc/clojure/clojure.core/reduce" | python -mjson.tool
 {
     "arglists": "([\"f\" \"coll\"] [\"f\" \"val\" \"coll\"])",
@@ -133,7 +133,7 @@ you imported clojure-1.4.0.json.gz):
 }
 ```
 
-```
+```json
 % curl -s "localhost:5000/meta/clojure/clojure.core/reduce" | python -mjson.tool
 [
     {
