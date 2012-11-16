@@ -259,6 +259,7 @@ Expect that this API might change between now and any time this is released.
 
 - API for adding examples
 - API for adding comments
+- Tests!
 
 ## See Also
 

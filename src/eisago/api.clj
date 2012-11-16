@@ -10,6 +10,12 @@
   [req]
   {:status 404 :body (json/encode {:status 404 :message "Invalid request"})})
 
+(defn error
+  "Response for API 500 errors"
+  [req]
+  {:status 500 :body (json/encode {:status 500
+                                   :message "There was an unknown error"})})
+
 (defn search
   "API implementation of searching, lib and namespace can be optionally
   specified as paths, with name and query optionally specified in
@@ -75,7 +81,8 @@
 
    #"^/_stats/?$" #'stats
 
-   :404 #'missing))
+   :404 #'missing
+   :500 #'error))
 
 (defn start-server []
   (laeggen/start (assoc (config :laeggen) :urls urls)))
