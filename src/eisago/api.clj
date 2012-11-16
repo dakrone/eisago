@@ -12,9 +12,10 @@
 
 (defn error
   "Response for API 500 errors"
-  [req]
+  [req ex]
   {:status 500 :body (json/encode {:status 500
-                                   :message "There was an unknown error"})})
+                                   :message "There was an error"
+                                   :error (.getMessage ex)})})
 
 (defn search
   "API implementation of searching, lib and namespace can be optionally
