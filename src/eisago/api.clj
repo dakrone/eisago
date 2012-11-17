@@ -1,9 +1,7 @@
 (ns eisago.api
   (:require [cheshire.core :as json]
             [eisago.config :refer [config]]
-            [eisago.es :as es]
-            [laeggen.core :as laeggen]
-            [laeggen.dispatch :as dispatch]))
+            [eisago.es :as es]))
 
 (defn missing
   "Response for non-matching API requests."
@@ -65,25 +63,3 @@
   "API implementation for returning all projects"
   [request]
   {:status 200 :body (json/encode (es/all-projects))})
-
-(def urls
-  (dispatch/urls
-   #"^/doc/([^/]+)/?$" #'doc-for
-   #"^/doc/([^/]+)/([^/]+)/([^/]+)/?$" #'doc-for
-
-   #"^/meta/([^/]+)/?$" #'children-for
-   #"^/meta/([^/]+)/([^/]+)/([^/]+)/?$" #'children-for
-
-   #"^/([^/]+)/([^/]+)/_search/?$" #'search
-   #"^/([^/]+)/_search/?$" #'search
-   #"^/_search/?$" #'search
-
-   #"^/_projects/?" #'all-projects
-
-   #"^/_stats/?$" #'stats
-
-   :404 #'missing
-   :500 #'error))
-
-(defn start-server []
-  (laeggen/start (assoc (config :laeggen) :urls urls)))
