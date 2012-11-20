@@ -1,6 +1,7 @@
 (ns eisago.http
   (:require [eisago.api :as api]
-            [eisago.views :as views]
+            [eisago.config :refer [config]]
+            [eisago.web :as web]
             [laeggen.core :as laeggen]
             [laeggen.dispatch :as dispatch]))
 
@@ -27,11 +28,12 @@
 
 (def web-urls
   (dispatch/urls
-   #"^/$" #'views/index))
+   #"^/$" #'web/index
+   :404 #'web/missing))
 
 (defn error [req ex]
   (if false ; (is this a web request?)
-    (views/error req ex)
+    (web/error req ex)
     (api/error req ex)))
 
 (def all-urls (dispatch/merge-urls

@@ -7,9 +7,10 @@
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [cheshire "4.0.4"]
+                 [clabango "0.3"]
                  [clj-http "0.5.7"]
                  [commons-codec "1.6"]
-                 [laeggen "0.3"]
+                 [laeggen "0.4"]
                  [org.apache.lucene/lucene-queryparser "4.0.0"]
                  [sonian/carica "1.0.0"]]
   :profiles {:dev {:dependencies [[org.clojure/java.jdbc "0.2.3"]
