@@ -29,6 +29,15 @@
 (def web-urls
   (dispatch/urls
    #"^/$" #'web/index
+
+   #"^/([^/]+)-([^/]+)/$" #'web/project-view
+   #"^/([^/]+)-([^/]+)/([^/]+)/$" #'web/namespace-view
+   #"^/([^/]+)-([^/]+)/([^/]+)/([^/]+)/$" #'web/var-view
+
+   #"^/([^/]+)/$" #'web/redirect-project
+   #"^/([^/]+)/([^/]+)/$" #'web/redirect-namespace
+   #"^/([^/]+)/([^/]+)/([^/]+)/$" #'web/redirect-var
+
    :404 #'web/missing))
 
 (defn error [req ex]
@@ -45,3 +54,5 @@
 (defn start-server []
   (laeggen/start (assoc (config :laeggen)
                    :urls all-urls)))
+
+;; (swap! laeggen/routes assoc (config :laeggen :port) (dispatch/merge-urls laeggen.views/default-urls all-urls))
