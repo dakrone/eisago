@@ -7,24 +7,29 @@
 
 (def api-urls
   (dispatch/urls
-   [#"^/api/v1/doc/([^/]+)/?$"
-    #"^/api/v1/doc/([^/]+)/([^/]+)/([^/]+)/?$"]
+   [#"^/v1/doc/([^/]+)/?$"
+    #"^/v1/doc/([^/]+)/([^/]+)/([^/]+)/?$"]
    #'api/doc-for
 
-   [#"^/api/v1/meta/([^/]+)/?$"
-    #"^/api/v1/meta/([^/]+)/([^/]+)/([^/]+)/?$"]
+   [#"^/v1/meta/([^/]+)/?$"
+    #"^/v1/meta/([^/]+)/([^/]+)/([^/]+)/?$"]
    #'api/children-for
 
-   [#"^/api/v1/([^/]+)/([^/]+)/_search/?$"
-    #"^/api/v1/([^/]+)/_search/?$"
-    #"^/api/v1/_search/?$"]
+   [#"^/v1/([^/]+)/([^/]+)/_search/?$"
+    #"^/v1/([^/]+)/_search/?$"
+    #"^/v1/_search/?$"]
    #'api/search
 
-   #"^/api/v1/_projects/?" #'api/all-projects
+   #"^/v1/_projects/?" #'api/all-projects
 
-   #"^/api/v1/_stats/?$" #'api/stats
+   #"^/v1/_stats/?$" #'api/stats
 
-   #"^/api/v1/.*" #'api/missing))
+   :404 #'api/missing
+   :500 #'api/error))
+
+(defn start-api-server []
+  (laeggen/start {:port (config :api-port)
+                  :urls api-urls}))
 
 (def web-urls
   (dispatch/urls
@@ -36,23 +41,11 @@
 
    #"^/([^/]+)/$" #'web/redirect-project
    #"^/([^/]+)/([^/]+)/$" #'web/redirect-namespace
-   #"^/([^/]+)/([^/]+)/([^/]+)/$" #'web/redirect-var
+   #"^/([^/]+)/([^/]+)/([^/]+)/$" #'web/redirect-var))
 
-   :404 #'web/missing))
+(defn start-web-server []
+  (laeggen/start {:port (config :web-port)
+                  :append-slash? true
+                  :urls web-urls}))
 
-(defn error [req ex]
-  (if false ; (is this a web request?)
-    (web/error req ex)
-    (api/error req ex)))
-
-(def all-urls (dispatch/merge-urls
-               api-urls
-               web-urls
-               (dispatch/urls
-                :500 #'error)))
-
-(defn start-server []
-  (laeggen/start (assoc (config :laeggen)
-                   :urls all-urls)))
-
-;; (swap! laeggen/routes assoc (config :laeggen :port) (dispatch/merge-urls laeggen.views/default-urls all-urls))
+;; (do (swap! laeggen/routes assoc (config :api-port) (dispatch/merge-urls laeggen.views/default-urls api-urls)) (swap! laeggen/routes assoc (config :web-port) (dispatch/merge-urls laeggen.views/default-urls web-urls)))

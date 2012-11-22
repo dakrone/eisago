@@ -3,5 +3,7 @@
   (:gen-class))
 
 (defn -main [& _]
-  (println "Starting Eisago HTTP Server...")
-  (http/start-server))
+  (println "Starting Eisago API Server...")
+  (http/start-api-server)
+  (println "Starting Eisago Web Server...")
+  (http/start-web-server))
