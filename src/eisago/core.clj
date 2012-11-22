@@ -1,7 +1,9 @@
 (ns eisago.core
-  (:require [eisago.api :as api])
+  (:require [eisago.http :as http])
   (:gen-class))
 
 (defn -main [& _]
-  (println "Starting Eisago API...")
-  (api/start-server))
+  (println "Starting Eisago API Server...")
+  (http/start-api-server)
+  (println "Starting Eisago Web Server...")
+  (http/start-web-server))

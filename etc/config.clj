@@ -6,6 +6,5 @@
                 :save-request? false
                 :as :json
                 :throw-exceptions false}
- :laeggen {:port 5000
-           :append-slash? false
-           :websocket false}}
+ :api-port 5001
+ :web-port 5000}
