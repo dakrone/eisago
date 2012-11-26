@@ -7,4 +7,5 @@
                 :as :json
                 :throw-exceptions false}
  :api-port 5001
- :web-port 5000}
+ :web-port 5000
+ :db {:connection-uri "jdbc:postgresql:eisago"}}
